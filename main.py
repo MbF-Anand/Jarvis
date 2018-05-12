@@ -39,19 +39,46 @@ def firemate():
 
 	req = request.get_json(force=True)
 
-	date = req['queryResult']['parameters'].get('date')
-	timeperiod = req['queryResult']['parameters'].get('time-period')
-	purpose = req['queryResult']['parameters'].get('purpose')
-	email = req['queryResult']['parameters'].get('email')
-	bookid = req['queryResult']['parameters'].get('bookid')
+	status = "Invalid Request"
+
+	try:
+		date = req['queryResult']['parameters'].get('date')[0]
+	except:
+		date = req['queryResult']['parameters'].get('date')
+
+	try:				
+		timeperiod = req['queryResult']['parameters'].get('time-period')[0]
+	except:
+		timeperiod = req['queryResult']['parameters'].get('time-period')
+
+	try:
+		purpose = req['queryResult']['parameters'].get('purpose')[0]
+	except:
+		purpose = req['queryResult']['parameters'].get('purpose')
+
+	try:
+		email = req['queryResult']['parameters'].get('email')[0]
+	except:
+		email = req['queryResult']['parameters'].get('email')
+
+	try:
+		bookid = req['queryResult']['parameters'].get('bookid')[0]
+	except:
+		bookid = req['queryResult']['parameters'].get('bookid')
+
+
 	action = req['queryResult'].get('action')
-	feedback = req['queryResult']['parameters'].get('feedback')
+
+	try:
+		feedback = req['queryResult']['parameters'].get('feedback')[0]
+	except:
+		feedback = req['queryResult']['parameters'].get('feedback')		
 
 	additionalquery = ""
 	count = starttime = endtime = False
 
 	if date:
-		date = dateutil.parser.parse(date[0]).date()
+		date = dateutil.parser.parse(date).date()
 	else:
 		date = datetime.now().date()
 
@@ -60,7 +87,6 @@ def firemate():
 		additionalquery += "WHERE date='%s'"%(date)
 
 		if timeperiod:
-			timeperiod = timeperiod[0]
 			starttime = str(dateutil.parser.parse(timeperiod.get('startTime')).time())
 			endtime = str(dateutil.parser.parse(timeperiod.get('endTime')).time())
 			additionalquery += " AND in_time>='%s' or out_time<='%s'"%(starttime,endtime)
@@ -95,15 +121,9 @@ def firemate():
 
 	if action in ['bookconferenceroom']:
 
-		if email:
-			email = email[0]
-		if purpose:
-			purpose = purpose[0]
-
 		additionalquery += "WHERE date='%s'"%(date)
 
 		if timeperiod:
-			timeperiod = timeperiod[0]
 			starttime = str(dateutil.parser.parse(timeperiod.get('startTime')).time())
 			endtime = str(dateutil.parser.parse(timeperiod.get('endTime')).time())
 			additionalquery += " AND in_time>='%s' or out_time<='%s'"%(starttime,endtime)
@@ -137,8 +157,7 @@ def firemate():
 	if action in ['cancelconferenceroom']:
 
 		if bookid:
-			bookid = bookid[0]
-			query = text("SELECT count(*) FROM meeting_room WHERE id='%s' AND user_name='%s'"%(bookid,email[0]))
+			query = text("SELECT count(*) FROM meeting_room WHERE id='%s' AND user_name='%s'"%(bookid,email))
 			booking_exist = db.engine.execute(query).fetchone()
 			booking_exist = booking_exist[0]
 			if booking_exist and bookid:
@@ -150,12 +169,6 @@ def firemate():
 
 
 	if action in ['feedback']:
-
-		if bookid:
-			bookid = bookid[0]
-
-		if feedback:
-			feedback = feedback[0]
 
 		positive = 0
 		negative = 0
