@@ -104,11 +104,16 @@ def firemate():
 		if available and starttime and endtime:				
 			status = 'This slot is available do you want to confirm'
 		else:
+			slotsstr = ""
+			for row in slots:
+				slotsstr+="\n"
+				slotsstr+="%s-%s"%(row['from_time'],row['to_time'])+"\n"
+
 			if starttime and endtime:
-				status = 'This slot is not available %s these slots are already booked on %s. Please choose some other slots'%(slots,date)
+				status = 'This slot is not available %s these slots are already booked on %s. Please choose some other slots'%(slotsstr,date)
 			else:
 				if slots:
-					status = '%s these slots are already booked on %s. Please choose some other slots'%(slots,date)
+					status = '%s these slots are already booked on %s. Please choose some other slots'%(slotsstr,date)
 				else:
 					status = 'All slots are free'			
 		
@@ -145,11 +150,16 @@ def firemate():
 			bookid = resp.lastrowid
 			status = "Booked successsfully, Booking ID: %s"%(bookid)			
 		else:
+			slotsstr = ""
+			for row in slots:
+				slotsstr+="\n"
+				slotsstr+="%s-%s"%(row['from_time'],row['to_time'])+"\n"
+
 			if starttime and endtime:
-				status = 'This slot is not available %s these slots are already booked on %s. Please choose some other slots'%(slots,date)
+				status = 'This slot is not available %s these slots are already booked on %s. Please choose some other slots'%(slotsstr,date)
 			else:
 				if slots:
-					status = '%s these slots are already booked on %s. Please choose some other slots'%(slots,date)
+					status = '%s these slots are already booked on %s. Please choose some other slots'%(slotsstr,date)
 				else:
 					status = 'All slots are free'		
 
